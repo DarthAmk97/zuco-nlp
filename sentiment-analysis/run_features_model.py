@@ -7,7 +7,7 @@ os.chdir(set_wd_to)
 sys.path.append(set_wd_to)
 import importlib
 import data_loading_helpers as dlh
-from configuration import new_configs
+from configuration import configs
 from sklearn.model_selection import ParameterGrid
 from constants import constants
 import tf_modeling as tfm
@@ -16,31 +16,37 @@ import summary_funcs as sf
 
 def cross_validate_configs(configs, config_name = "UNKNOWN", save_data = True):
     results_list = []
-    for config in configs:
-        complete_config = new_configs.complete_config(config)
+    # for config in configs:
+    complete_config = configs.complete_config(configs.default_config)
+    if complete_config['DB_Save']==True:
         db = dlh.new_data_box(complete_config)
-        seed = config.get("Random_Seed", 113)
+        seed = 113  # configs.get("Random_Seed", 113)
+        db.shuffle_data(seed)
+        db.oversample_underreepresented_classes()
+    else:
+        db = dlh.new_data_box(complete_config)
+        seed = 113 #configs.get("Random_Seed", 113)
         db.shuffle_data(seed)
         db.oversample_underreepresented_classes()
 
-        model = tfm.AugmentedRNN(input_config=complete_config, vocab_size=len(db.vocab_processor.vocabulary_),
-                                 max_sentence_length=db.vocab_processor.max_document_length)
+    model = tfm.AugmentedRNN(input_config=complete_config, vocab_size=len(db.vocab_processor.vocabulary_),
+                             max_sentence_length=db.vocab_processor.max_document_length)
 
-        results_file = tfm.cross_validate_config_accuracy(model, data_obj = db, input_config = complete_config,
-                                                          create_table=True, specialized_embeddings = True,
-                                                          tensorboard_save = False)
+    results_file = tfm.cross_validate_config_accuracy(model, data_obj = db, input_config = complete_config,
+                                                      create_table=True, specialized_embeddings = True,
+                                                      tensorboard_save = False)
 
-        cv_results_dict = dict(config)
-               stats = ['Accuracy', 'Precision_neg', 'Recall_neg', 'F1_neg', 'Precision_pos', 'Recall_pos', 'F1_pos']
-        for stat in stats:
-            cv_results_dict[stat] = results_file[stat].mean()
+    cv_results_dict = dict(configs.default_config)
+    stats = ['Accuracy', 'Precision_neg', 'Recall_neg', 'F1_neg', 'Precision_pos', 'Recall_pos', 'F1_pos']
+    for stat in stats:
+        cv_results_dict[stat] = results_file[stat].mean()
 
-        results_list.append(cv_results_dict)
-        model.reset_graph()
+    results_list.append(cv_results_dict)
+    model.reset_graph()
 
     if save_data:
         summary = pd.DataFrame.from_records(results_list)
-        summary_path = new_configs.default_config['RESULTS_FILE_PATH'] + "Summaries/"
+        summary_path = configs.default_config['RESULTS_FILE_PATH'] + "Summaries/"
         summary_name = "Summary_" + config_name + ".csv"
         if os.path.isfile(summary_path + summary_name):
             old_summary = pd.read_csv(summary_path + summary_name)
@@ -121,7 +127,7 @@ if __name__ == "__main__":
     save_data = "-s" in sys.argv
 
     print("Running configuration {}.\n Having parameters {}.".format(config_name, par_lists))
-    configs = list(ParameterGrid(par_lists))
+    #configs = list(ParameterGrid(par_lists))
     cross_validate_configs(configs, config_name, save_data)
 
 

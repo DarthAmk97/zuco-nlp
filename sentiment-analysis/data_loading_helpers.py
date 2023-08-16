@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.datasets import load_files
 import os.path
 import shutil
-from configuration import new_configs
+from configuration import configs
 import word_embedding_helpers as weh
 from constants import constants
 import tflearn
@@ -190,7 +190,15 @@ def unzip_data_files(zip_path, folder_path, verbose=True):
 
 def get_sentence_order(dataset):
     # Find numbers between '/' and '.txt' in filenames, convert them to integers and return a list
-    return [int(x) for x in [re.findall('/([0-9]+).txt$', filename)[0] for filename in dataset["filenames"]]]
+    #return [int(x) for x in [re.findall('\\([0-9]+).txt$', filename)[0] for filename in dataset["filenames"]]]
+    results = []
+    for filename in dataset["filenames"]:
+        num = filename.split('\\')[-1]
+        num = re.sub('\.txt$', '', num)
+        results.append(int(num))
+    results = [int(filename.split('\\')[-1].split('.')[0]) for filename in dataset["filenames"]]
+    return results
+
 
 
 
@@ -198,9 +206,9 @@ class last_data_box:
     """
     Class to contain all data loaded for the language model augmented via EEG and ET
     """
-    def __init__(self, input_config = new_configs.default_config, seed = 100):
+    def __init__(self, input_config = configs.default_config, seed = 100):
         np.random.seed(seed)
-        self.input_config = new_configs.complete_config(input_config)
+        self.input_config = configs.complete_config(input_config)
 
         if type(self.input_config['SUBJECTS']) != list:
             self.input_config['SUBJECTS'] = [self.input_config['SUBJECTS']]
@@ -387,9 +395,9 @@ class new_data_box:
     """
     Class to contain all data loaded for the language model augmented via EEG and ET
     """
-    def __init__(self, input_config = new_configs.default_config, seed = 100):
+    def __init__(self, input_config = configs.default_config, seed = 100):
         np.random.seed(seed)
-        self.input_config = new_configs.complete_config(input_config)
+        self.input_config = configs.complete_config(input_config)
 
         if type(self.input_config['SUBJECTS']) != list:
             self.input_config['SUBJECTS'] = [self.input_config['SUBJECTS']]

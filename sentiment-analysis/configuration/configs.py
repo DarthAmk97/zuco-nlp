@@ -2,7 +2,7 @@ from constants import constants
 
 # TODO: Change so that it does
 default_config = {
-    'Config_name': "UNNAMED_CONFIG",
+    'Config_name': "word_embedding_b",
             # Data paths
     'DATASETS_PATH': "data/sentences",
     'WORD_EMBEDDINGS_PATH': "embeddings/GoogleNews-vectors-negative300.bin",
@@ -20,11 +20,12 @@ default_config = {
     'SUBJECTS': None,
     'JOIN_SUBJECTS_METHOD': 'AVERAGE', # TODO: Used only if more than one subject is selected, check it raises ERROR, can assume values AVERAGE, STACK and CONCATENATE
             # Classification type
-    'BINARY_CLASSIFICATION': False,
+    'BINARY_CLASSIFICATION': True,
     'BINARY_FORMAT': 'POS_VS_NEG', # POS_VS_NEG, POS_VS_NONPOS or NEG_VS_NONNEG
             # Data preprocessing was moved
     # 'PCA_DIMENSION': -1,
     # 'USE_LDS_SMOOTHING': False,
+    'DB_SAVE': True,
 # TODO: CHANGE THIS SO THAT IT CONSIDERS ALL MODELS
             # Model Hyperparameters config
     'LSTM_UNITS': 200,

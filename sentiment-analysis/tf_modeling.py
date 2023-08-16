@@ -8,7 +8,7 @@ import time
 import pandas as pd
 import os
 import os.path
-from configuration import new_configs
+from configuration import configs
 
 from matplotlib import pyplot as plt
 
@@ -88,7 +88,7 @@ def add_tf_classification_measures(model):
 class AugmentedRNN:
     def __init__(self, input_config = {}, vocab_size = None, max_sentence_length = 41):
 
-        self.input_config = new_configs.complete_config(input_config)
+        self.input_config = configs.complete_config(input_config)
 
         self.data_placeholders = {}
         self.sentence_features = []

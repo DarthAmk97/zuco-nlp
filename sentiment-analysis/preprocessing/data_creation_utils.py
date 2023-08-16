@@ -24,7 +24,7 @@ def is_real_word(word):
     return re.search('[a-zA-Z0-9]', word)
 
 def open_subject_sentence_data(subject):
-    filepath = "./Data_to_preprocess/results" + subject + "_SR_ica_new.mat"
+    filepath = "./Data_to_preprocess/results" + subject + "_SR.mat"#+ "_SR_ica_new.mat"
     f = h5py.File(filepath)
     return f
 
@@ -95,7 +95,6 @@ def extract_word_level_data(data_container, word_objects, eeg_float_resolution =
                 data_dict["TRT"] = data_container[trt[0]].value[0, 0] if len(data_container[trt[0]].value.shape) == 2 else None
                 data_dict["nFix"] = data_container[nFix[0]].value[0, 0] if len(data_container[nFix[0]].value.shape) == 2 else None
                 fixations_order_per_word.append(fixPos)
-
                 data_dict["word_idx"] = word_idx
                 # TODO: data_dict["word2vec_idx"] = Looked up after through the actual word.
                 data_dict["content"] = word_string
@@ -151,6 +150,7 @@ def extract_sentence_level_data(subject, eeg_float_resolution=np.float16):
     wordData = sentence_data['word']
     dataset, x, x_text, y, _ = dlh.get_processed_dataset(dataset_path="data/sentences", binary=False, verbose=True,
                                                          labels_from=None)
+    print(dataset['filenames'])
     sentence_order = dlh.get_sentence_order(dataset)
     sentence_level_data = {}
     for idx in range(len(rawData)): # raw data is an used but they all should be the same in length (400 for ternary, about 2/3 of that for binary)
@@ -169,20 +169,27 @@ def extract_sentence_level_data(subject, eeg_float_resolution=np.float16):
         data_dict["label_content"] = dataset['data'][label_idx]
         label_n = np.where(data_dict["label"] == 1)[0][0]
         data_dict["label_name"] = dataset['target_names'][label_n]
-        bad_channels = get_bad_channels(idx, subject)
-        data_dict["bad_channels"] = bad_channels.split(" ") if type(bad_channels) == str else None
+        #bad_channels = get_bad_channels(idx, subject)
+        #data_dict["bad_channels"] = bad_channels.split(" ") if type(bad_channels) == str else None
         data_dict["word_level_data"] = extract_word_level_data(f, f[wordData[idx][0]], eeg_float_resolution=eeg_float_resolution)
         sentence_level_data[idx] = data_dict
     return sentence_level_data
 
+import os
 def create_all_subjects_data(filename, eeg_float_resolution=np.float16):
     all_subjects_dict = {}
     for subject in constants.SUBJECT_NAMES:
+        subject_file = filename + "_" + subject + ".pickle"
+        if os.path.exists(subject_file):
+            print(f"File {subject_file} already exists, skipping subject {subject}")
+            continue
         print(subject)
         all_sentences_info = extract_sentence_level_data(subject, eeg_float_resolution=eeg_float_resolution)
         all_subjects_dict[subject] = all_sentences_info
-        subject_file = filename + "_" + subject + ".pickle"
         print("Data saved in file " + subject_file)
+        folder_path = os.path.dirname(subject_file)
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
         with open(subject_file, "wb") as f:
             pkl.dump(all_sentences_info, f)
     return all_subjects_dict
