@@ -2,7 +2,7 @@ from constants import constants
 
 # TODO: Change so that it does
 default_config = {
-    'Config_name': "word_embedding_b",
+    'Config_name': "EEG+WE_Attention",
             # Data paths
     'DATASETS_PATH': "data/sentences",
     'WORD_EMBEDDINGS_PATH': "embeddings/GoogleNews-vectors-negative300.bin",
@@ -30,8 +30,8 @@ default_config = {
             # Model Hyperparameters config
     'LSTM_UNITS': 200,
     'HIDDEN_LAYER_UNITS': 50,
-    'USE_NORMALIZATION_LAYER': False,
-    'ATTENTION_EMBEDDING': False,
+    'USE_NORMALIZATION_LAYER': True,
+    'ATTENTION_EMBEDDING': True,
             # Learning rate hyperparameters
     'INITIAL_LR': .001,
     'HALVE_LR_EVERY_PASSES': 2,

@@ -18,16 +18,16 @@ def cross_validate_configs(configs, config_name = "UNKNOWN", save_data = True):
     results_list = []
     # for config in configs:
     complete_config = configs.complete_config(configs.default_config)
-    if complete_config['DB_Save']==True:
-        db = dlh.new_data_box(complete_config)
-        seed = 113  # configs.get("Random_Seed", 113)
-        db.shuffle_data(seed)
-        db.oversample_underreepresented_classes()
-    else:
-        db = dlh.new_data_box(complete_config)
-        seed = 113 #configs.get("Random_Seed", 113)
-        db.shuffle_data(seed)
-        db.oversample_underreepresented_classes()
+    # if complete_config['DB_Save']==True:
+    #     db = dlh.new_data_box(complete_config)
+    #     seed = 113  # configs.get("Random_Seed", 113)
+    #     db.shuffle_data(seed)
+    #     db.oversample_underreepresented_classes()
+    # else:
+    db = dlh.new_data_box(complete_config)
+    seed = 113 #configs.get("Random_Seed", 113)
+    db.shuffle_data(seed)
+    db.oversample_underreepresented_classes()
 
     model = tfm.AugmentedRNN(input_config=complete_config, vocab_size=len(db.vocab_processor.vocabulary_),
                              max_sentence_length=db.vocab_processor.max_document_length)
