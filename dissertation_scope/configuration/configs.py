@@ -29,24 +29,24 @@ default_config = {
 # TODO: CHANGE THIS SO THAT IT CONSIDERS ALL MODELS
             # Model Hyperparameters config
     'LSTM_UNITS': 200,
-    'HIDDEN_LAYER_UNITS': 256,
+    'HIDDEN_LAYER_UNITS': 512,
     'USE_NORMALIZATION_LAYER': False,
     'ATTENTION_EMBEDDING': False,
             # Learning rate hyperparameters
     'INITIAL_LR': .001,
-    'HALVE_LR_EVERY_PASSES': 5,
+    'HALVE_LR_EVERY_PASSES': 2,
             # Regularization
     'L2_REG_LAMBDA': 0.00001,
-    'num_heads':8,
-    'input_dim':512,
+    'num_heads':32,
+    'input_dim':128,
     'L1_REG_LAMBDA': 0.0000,
     'DROPOUT_KEEP_PROB': .5,
             # Learning phases hyperparameters
     'BATCH_SIZE': 24,
-    'NUM_EPOCHS': 10,
+    'NUM_EPOCHS': 100,
             # Evaluation
-    'EVALUATE_EVERY': 100,
-    'NUMBER_OF_CV_SPLITS': 10,
+    'EVALUATE_EVERY': 30,
+    'NUMBER_OF_CV_SPLITS':15,
             # Machine config
     'PER_PROCESS_GPU_FRACTION': .5,
     'TF_DEVICE': '/cpu:0', # maybe should be changed for the server? what does it do exactly?
